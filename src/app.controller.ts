@@ -23,4 +23,20 @@ export class AppController {
       return { message: 'Failed to save login data.' };
     }
   }
+  @Get('logins')
+  getLoginData() {
+    const filePath = path.join(__dirname, '..', 'logins.txt');
+
+    try {
+      if (!fs.existsSync(filePath)) {
+        return { message: 'No login data found.' };
+      }
+
+      const data = fs.readFileSync(filePath, 'utf8');
+      return { message: 'Login data retrieved successfully!', data };
+    } catch (error) {
+      console.error('Error reading login data:', error);
+      return { message: 'Failed to retrieve login data.' };
+    }
+  }
 }
