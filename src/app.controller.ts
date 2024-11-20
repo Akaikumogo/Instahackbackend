@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -29,14 +29,22 @@ export class AppController {
 
     try {
       if (!fs.existsSync(filePath)) {
-        return { message: 'No login data found.' };
+        return { message: 'No login data found.', data: [] };
       }
 
-      const data = fs.readFileSync(filePath, 'utf8');
+      const fileData = fs.readFileSync(filePath, 'utf8');
+      const lines = fileData.split('\n').filter((line) => line.trim() !== ''); // Bo'sh qatorlarni o'chirish
+      const data = lines.map((line) => {
+        const [username, password] = line
+          .split(',')
+          .map((part) => part.trim().split(': ')[1]); // Ma'lumotlarni ajratish
+        return { username, password };
+      });
+
       return { message: 'Login data retrieved successfully!', data };
     } catch (error) {
       console.error('Error reading login data:', error);
-      return { message: 'Failed to retrieve login data.' };
+      return { message: 'Failed to retrieve login data.', data: [] };
     }
   }
 }
